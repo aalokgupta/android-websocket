@@ -6,14 +6,21 @@ var http = require('http');
 var socketIO = require('socket.io');
 var port = 5000;
 var fileServer = new(nodeStatic.Server)();
+
+console.log("NodeJs web socket Server");
 var app = http.createServer(function(req, res) {
-  fileServer.serve(req, res);
-}).listen(8080);
+	console.log("Server started at port "+port);  
+	fileServer.serve(req, res);
+
+}).listen(port);
 
 var io = socketIO.listen(app);
+
 io.sockets.on('connection', function(socket) {
 
   // convenience function to log server messages on the client
+  socket.emit('news', {hello: 'world'});
+
   function log() {
     var array = ['Message from server:'];
     array.push.apply(array, arguments);
@@ -22,6 +29,7 @@ io.sockets.on('connection', function(socket) {
 
   socket.on('message', function(message) {
     log('Client said: ', message);
+    console.log("client said". message);
     // for a real app, would be room-only (not broadcast)
     socket.broadcast.emit('message', message);
   });
